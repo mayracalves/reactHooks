@@ -1,41 +1,26 @@
 import React, { useState, useEffect } from 'react';
 
 export default function App() {
-  const [repositories, setRepositories] = useState([]);
-
-  useEffect(async () => {
-    const response = await fetch('https://api.github.com/users/mayracalves/repos');
-    const data = await response.json();
-
-    setRepositories(data);
-  }, []);
+  const [location, setLocation] = useState({});
 
   useEffect(() => {
-    const filtered = repositories.filter(repo => repo.favorite);
+    const whatchId = navigator.geolocation.watchPosition(handlePostitionReceived);
 
-    document.title = `Você tem ${filtered.length} favoritos`;
-  }, [repositories]);
+    return () => navigator.geolocation.clearWatch(whatchId);
 
+  }, []);
 
-  function handleFavorite(id) {
-    const newRepositories = repositories.map(repo => {
-      return repo.id === id ? { ...repo, favorite: !repo.favorite } : repo
-    });
+  function handlePostitionReceived({ coords }) {
+    const { latitude, longitude } = coords;
 
-    setRepositories(newRepositories);
+    setLocation({ latitude, longitude });
   }
 
   return (
-    <ul>
-      {repositories.map(repo => (
-        <li key={repo.id}>
-          {repo.name}
-          <button onClick={() => handleFavorite(repo.id)}>Favoritar</button>
-          {repo.favorite && <span>(Favorito)</span>}
-        </li>
-      ))}
-
-    </ul>
+    <>
+      Latitude: {location.latitude} <br />
+      Longitude: {location.longitude}
+    </>
 
   );
 };
