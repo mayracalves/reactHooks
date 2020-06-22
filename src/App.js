@@ -1,26 +1,21 @@
 import React, { useState, useEffect } from 'react';
 
 export default function App() {
-	const [repositories, setRepositories] = useState([
-		{ id: 1, name: 'repo-1' },
-		{ id: 2, name: 'repo-2' },
-		{ id: 3, name: 'repo-3' }
-	]);
+  const [repositories, setRepositories] = useState([]);
 
-	function handleAddRepository() {
-		setRepositories([...repositories, { id: Math.random(), name: "novo repo" }])
-	}
+  useEffect( async() => {
+    const response = await fetch('https://api.github.com/users/mayracalves/repos');
+    const data = await response.json();
 
-	return (
-		<React.Fragment>
-			<ul>
-				{repositories.map(repo => (
-					<li key={repo.id}>{repo.name}</li>
-				))}
-			</ul>
-			<button onClick={handleAddRepository}>
-				Adicionar repositorio
-			</button>
-		</React.Fragment>
-	);
+    setRepositories(data);
+  }, []);
+
+  return (
+    <ul>
+      {repositories.map(repo => (
+        <li key={repo.id}>{repo.name}</li>
+      ))}
+    </ul>
+
+  );
 };
